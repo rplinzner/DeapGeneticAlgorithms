@@ -1,3 +1,5 @@
+from sga import sgaAlgorithm
+import configparser
 import array
 import random
 import json
@@ -12,7 +14,6 @@ from deap import tools
 import matplotlib.pyplot as plt
 
 # region config loading
-import configparser
 
 config = configparser.ConfigParser()
 config.read("config.ini")
@@ -23,6 +24,12 @@ NDIM = int(config['Values']['NDIM'])
 CXPB = float(config['Values']['CXPB'])
 MUTPB = float(config['Values']['MUTPB'])
 NGEN = int(config['Values']['NGEN'])
+NPOPULATION = int(config['Values']['NPOPULATION'])
+ALGORITHM = int(config['Values']['ALGORITHM'])
+MU = int(config['Values']['MU'])
+LAMBDA = int(config['Values']['LAMBDA'])
+MATING = config['Values']['MATING']
+MUTATION = config['Values']['MUTATION']
 EVAL_FUNC = config['Values']['EVAL']
 
 # endregion
@@ -45,9 +52,17 @@ toolbox.register("individual", tools.initIterate,
                  creator.Individual, toolbox.attr_float)
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 
-toolbox.register("mate", tools.cxTwoPoint)
-toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=1, indpb=0.1)
-toolbox.register("select", tools.selTournament, tournsize=10)
+if MATING == 'TwoPoint':
+    toolbox.register("mate", tools.cxTwoPoint)
+else:
+    toolbox.register("mate", tools.cxOnePoint)
+
+if MUTATION == 'gaussian':
+    toolbox.register("mutate", tools.mutGaussian, mu=0, sigma=0.7, indpb=MUTPB)
+else:
+    toolbox.register("mutate", tools.mutShuffleIndexes, indpb=MUTPB)
+
+toolbox.register("select", tools.selTournament, tournsize=5)
 toolbox.register("evaluate", eval(EVAL_FUNC))
 
 
@@ -57,51 +72,23 @@ def main():
     stats.register("std", numpy.std, axis=0)
     stats.register("min", numpy.min, axis=0)
     stats.register("max", numpy.max, axis=0)
+    halloffame = tools.HallOfFame(maxsize=1)
+    population = toolbox.population(n=NPOPULATION)
+    if ALGORITHM == 0:
+        population, logbook = sgaAlgorithm(
+            population, toolbox, NGEN, CXPB, MUTPB, halloffame, stats)
+    else:
+        population, logbook = algorithms.eaMuCommaLambda(
+            population, toolbox, MU, LAMBDA, CXPB, MUTPB, NGEN, stats, halloffame)
 
-    logbook = tools.Logbook()
-    logbook.header = "gen", "evals", "std", "min", "avg", "max"
-    pop = toolbox.population(n=200)
-
-    invalid_ind = [ind for ind in pop if not ind.fitness.valid]
-    fitnesses = map(toolbox.evaluate, pop)
-    for ind, fit in zip(pop, fitnesses):
-        ind.fitness.values = fit
-
-    record = stats.compile(pop)
-    logbook.record(gen=0, evals=len(invalid_ind), **record)
-    print(logbook.stream)
-
-    for g in range(NGEN):
-        offspring = toolbox.select(pop, len(pop))
-        offspring = [toolbox.clone(ind) for ind in offspring]
-
-        for child1, child2 in zip(offspring[::2], offspring[1::2]):
-            if random.random() < CXPB:
-                toolbox.mate(child1, child2)
-                del child1.fitness.values
-                del child2.fitness.values
-
-        for mutant in offspring:
-            if random.random() < MUTPB:
-                toolbox.mutate(mutant)
-                del mutant.fitness.values
-
-        invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
-        fitnesses = map(toolbox.evaluate, invalid_ind)
-        for ind, fit in zip(invalid_ind, fitnesses):
-            ind.fitness.values = fit
-
-        pop[:] = offspring
-        record = stats.compile(pop)
-        logbook.record(gen=g, evals=len(invalid_ind), **record)
-        print(logbook.stream)
-
-    return pop, logbook
+    return population, halloffame, logbook
 
 
 if __name__ == "__main__":
 
-    pop, logbook = main()
+    population, halloffame, logbook = main()
+
+    print(halloffame)
 
     gen = logbook.select("gen")
     fit_mins = logbook.select("min")
