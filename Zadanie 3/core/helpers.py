@@ -32,7 +32,7 @@ def plot_data_set(cluster_centers, numOfClusters, numOfElemsInCluster, data):
     for i in range(len(cluster_centers)):
         for idx, val in enumerate(assignments):
             if i == val:
-                plots[i].append(data.data_set[idx])
+                plots[i].append(data[idx])
 
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')

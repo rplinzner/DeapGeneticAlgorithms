@@ -55,5 +55,4 @@ class ClusterData:
                                 clusteredData[i][ind], clusteredData[j][ind1])
                             if closestDistances[index] == 0 or closestDistances[index] > currentDistance:
                                 closestDistances[index] = currentDistance
-
         return sum(averageDistances), sum(averageDensity), sum(closestDistances)

@@ -67,6 +67,10 @@ def main(seed=None):
 
     record = stats.compile(pop)
     logbook.record(gen=0, evals=len(invalid_ind), **record)
+    print(logbook.stream)
+    halloffame.update(pop)
+    print(halloffame)
+    helpers.plot_data_set(np.array(halloffame[0]), 3, 3, data)
 
     # Begin the generational process
     for gen in range(NGEN):
@@ -101,4 +105,4 @@ def main(seed=None):
 if __name__ == "__main__":
     pop, logbook, hof = main()
     print(hof)
-    helpers.plot_data_set(np.array(hof[0]))
+    helpers.plot_data_set(np.array(hof[0]), 3, 3, data)
