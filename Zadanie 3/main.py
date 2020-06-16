@@ -75,7 +75,8 @@ def main(seed=None):
     print(logbook.stream)
     halloffame.update(pop)
     print(halloffame)
-    helpers.plotDataWithCentroids(np.array(halloffame[0]), 3, 3, data)
+    helpers.plotDataWithCentroids(
+        np.array(halloffame[0]), numOfClusters, numOfDataInCluster, data)
 
     # Begin the generational process
     for gen in range(NGEN):
@@ -110,4 +111,5 @@ def main(seed=None):
 if __name__ == "__main__":
     pop, logbook, hof = main()
     print(hof)
-    helpers.plotDataWithCentroids(np.array(hof[0]), 3, 3, data)
+    helpers.plotDataWithCentroids(
+        np.array(hof[0]), numOfClusters, numOfDataInCluster, data)
