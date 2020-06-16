@@ -26,13 +26,3 @@ class DataService:
         for index in range(self.numberOfClusters):
             samples = np.append(samples, random.choice(self.loadedData))
         return samples
-
-    def group_data(self, assignments, groups):
-        grouped = {}
-        for i in range(groups):
-            grouped.setdefault(i, [])
-
-        for idx, val in enumerate(assignments):
-            grouped[val].append(self.loadedData[idx])
-
-        return grouped
