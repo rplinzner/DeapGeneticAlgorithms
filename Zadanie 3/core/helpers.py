@@ -23,35 +23,48 @@ def clusterData(data, clusterIndexes, numOfClusters):
     return ret
 
 
-def plot_data_set(cluster_centers, numOfClusters, numOfElemsInCluster, data):
-    cluster_centers = np.array(cluster_centers).reshape(
+def plotDataWithCentroids(individual, numOfClusters, numOfElemsInCluster, data):
+    #
+    centroids = np.array(individual).reshape(
         numOfClusters, numOfElemsInCluster)
-    assignments = kmeans(cluster_centers, data)
+
+    assignments = kmeans(centroids, data)
+
+    print("Assigned data:")
     print(assignments)
-    plots = [[] for k in range(len(cluster_centers))]
-    for i in range(len(cluster_centers)):
-        for idx, val in enumerate(assignments):
-            if i == val:
-                plots[i].append(data[idx])
+
+    plots = [[] for k in range(len(centroids))]
+
+    for i in range(len(centroids)):
+        for centr, value in enumerate(assignments):
+            if i == value:
+                plots[i].append(data[centr])
+
+    colors = ['red', 'green', 'blue']
 
     fig = plt.figure()
+
     ax = fig.add_subplot(111, projection='3d')
-    colors = ['r', 'g', 'b', 'orange']
+
     for cluster in range(len(plots)):
+
+        x = []
+        y = []
+        z = []
+
         if len(plots[cluster]) > 0:
             x = np.array(plots[cluster])[:, 0]
             y = np.array(plots[cluster])[:, 1]
             z = np.array(plots[cluster])[:, 2]
-        else:
-            x = []
-            y = []
-            z = []
-        xc = cluster_centers[cluster][0]
-        yc = cluster_centers[cluster][1]
-        zc = cluster_centers[cluster][2]
 
-        ax.scatter(x, y, z, c=colors[cluster], marker='.', s=100)
-        ax.scatter(xc, yc, zc, c='black', marker='.', s=250)
+        xCentroid = centroids[cluster][0]
+        yCentroid = centroids[cluster][1]
+        zCentroid = centroids[cluster][2]
+
+        ax.scatter(x, y, z, c=colors[cluster], marker='x', s=25)
+
+        ax.scatter(xCentroid, yCentroid, zCentroid,
+                   c='black', marker='.', s=200)
 
     ax.set_xlabel('x')
     ax.set_ylabel('y')

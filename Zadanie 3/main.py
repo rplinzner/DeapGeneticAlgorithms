@@ -17,7 +17,7 @@ MU = 60
 numOfClusters = 3
 numOfDataInCluster = 3
 
-skipRows = 1000
+skipRows = 300
 
 dataService = DataService(
     'D:\\GITHUB\\DeapGeneticAlgorithms\\Zadanie 3\\core\\3D_spatial_network.txt', numOfClusters, 60)
@@ -75,7 +75,7 @@ def main(seed=None):
     print(logbook.stream)
     halloffame.update(pop)
     print(halloffame)
-    helpers.plot_data_set(np.array(halloffame[0]), 3, 3, data)
+    helpers.plotDataWithCentroids(np.array(halloffame[0]), 3, 3, data)
 
     # Begin the generational process
     for gen in range(NGEN):
@@ -110,4 +110,4 @@ def main(seed=None):
 if __name__ == "__main__":
     pop, logbook, hof = main()
     print(hof)
-    helpers.plot_data_set(np.array(hof[0]), 3, 3, data)
+    helpers.plotDataWithCentroids(np.array(hof[0]), 3, 3, data)
