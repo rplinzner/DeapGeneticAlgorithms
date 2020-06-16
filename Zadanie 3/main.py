@@ -14,14 +14,20 @@ MUTPB = 0.2
 CXPB = 0.8
 MU = 60
 
+numOfClusters = 3
+numOfDataInCluster = 3
+
+skipRows = 1000
+
 dataService = DataService(
-    'D:\\GITHUB\\DeapGeneticAlgorithms\\Zadanie 3\\core\\3D_spatial_network.txt', 3)
-dataService.load_data([0])
-dataService.visualize_data()
+    'D:\\GITHUB\\DeapGeneticAlgorithms\\Zadanie 3\\core\\3D_spatial_network.txt', numOfClusters, 60)
 
-data = dataService.data_set
+# SKIP first column
+dataService.load_data([0], skipRows)
 
-clusterData = ClusterData(3, 3, data)
+data = dataService.loadedData
+
+clusterData = ClusterData(numOfClusters, numOfDataInCluster, data)
 
 creator.create("Fitnesses", base.Fitness, weights=(-1.0, -1.0, 1.0))
 creator.create("Individual", np.ndarray, fitness=creator.Fitnesses)
@@ -53,7 +59,6 @@ def main(seed=None):
     stats.register("max", np.max, axis=0)
     halloffame = tools.HallOfFame(maxsize=1, similar=np.array_equal)
     pop = toolbox.population(n=MU)
-    print("loll")
 
    # Evaluate the individuals with an invalid fitness
     invalid_ind = [ind for ind in pop if not ind.fitness.valid]
