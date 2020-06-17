@@ -1,7 +1,6 @@
 from deap import creator
 from deap import tools
 from deap import base
-from deap.benchmarks.tools import diversity, convergence, hypervolume
 import numpy as np
 import random
 
@@ -18,9 +17,10 @@ numOfClusters = 3
 numOfDataInCluster = 3
 
 skipRows = 300
+numberOfRows = 60
 
 dataService = DataService(
-    'D:\\GITHUB\\DeapGeneticAlgorithms\\Zadanie 3\\core\\3D_spatial_network.txt', numOfClusters, 60)
+    'D:\\GITHUB\\DeapGeneticAlgorithms\\Zadanie 3\\core\\3D_spatial_network.txt', numOfClusters, numberOfRows)
 
 # SKIP first column
 dataService.load_data([0], skipRows)
@@ -110,6 +110,9 @@ def main(seed=None):
 
 if __name__ == "__main__":
     pop, logbook, hof = main()
+    print("FINAL:")
     print(hof)
+    print(logbook.stream)
+
     helpers.plotDataWithCentroids(
         np.array(hof[0]), numOfClusters, numOfDataInCluster, data)
